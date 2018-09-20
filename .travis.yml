@@ -43,3 +43,4 @@ deploy:
   file: build/*.exe
   on:
     repo: uncleLuo/vue-electron-test
+    # tags: true
