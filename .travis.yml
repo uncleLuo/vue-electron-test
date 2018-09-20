@@ -33,14 +33,14 @@ install:
 script:
 - yarn run lint
 - yarn run build
-branches:
-  only:
-  - master
+# branches:
+#   only:
+#   - master
 deploy:
   provider: releases
   api_key:
     secure: flyXUmcgUqbPlbw035fLTYcJQ91ctnn+DPod9jqhOlQ7wWOh1w74cJZ4jeHIHnmmE3ToM9s3di5vU+3xpHcquXOcYACFKh4k9Xae06tLadb3ELf5+D3+637yMeppiU3tqRTir9LoCEJeH+m4QVCue1n+/91ag4odTSEXORT1UtBssSR1TVdqHp159+aJXVkUkfpEQWv4pL9A8jzHygYpnETi/QxzzRKV5y7FiorF60oEPXl+iBCxiedIE5WDvk//96otMDioOLVGIAwF81c+qK4mACzWabIjIxa1qDAkg+xC+bV051rQg1C6wP1aYlhVWLwcFxkq3Q6YManedcZRpcreK7J66M5a5NN072pq9SDmFteoYYB3nS9TmQQ4tVj8n7XVAkVUmM6X5EDoB3RjtWfYfJnQhE8OtewH8f7RSQSPRYSTQ6yeoO8jcpmNPl8k0vBiwYgeE9KzZNCR8aTX9am2h6llX7BPlnJRqq71k4m5Oo54BL0gRmwm8R6zZDyVURZKBOkHDEDtlCSG9TRfSTYdd+XBhV4zRsf75rcUDqatMDU9j8IBs+BByD0xNkJyaj7EA0qoBTxYM9Xz4WapJpPMkaLFSscFPzyzV1/gQSmF9x7be2BnKwKr3BvPY59kBAxL3wzs2Des6D3Pzf5tpcxkXKMyJtgFNnKxcgiXt/U=
-  file: build/*.exe
+  file: build/*
   on:
     repo: uncleLuo/vue-electron-test
-    # tags: true
+    tags: true
