@@ -1,42 +1,46 @@
 osx_image: xcode8.3
-
+sudo: required
 dist: trusty
-sudo: false
-
-language: node_js
-node_js: "8"
-
-env:
-  global:
-    - ELECTRON_CACHE=$HOME/.cache/electron
-    - ELECTRON_BUILDER_CACHE=$HOME/.cache/electron-builder
-
-os:
-  - linux
-  - osx
-
+language: c
+matrix:
+  include:
+  - os: osx
+  - os: linux
+    env: CC=clang CXX=clang++ npm_config_clang=1
+    compiler: clang
 cache:
   directories:
   - node_modules
-  - $HOME/.cache/electron
-  - $HOME/.cache/electron-builder
-  - $HOME/.npm/_prebuilds
-
+  - "$HOME/.electron"
+  - "$HOME/.cache"
+addons:
+  apt:
+    packages:
+    - libgnome-keyring-dev
+    - icnsutils
 before_install:
-  - mkdir -p /tmp/git-lfs && curl -L https://github.com/github/git-lfs/releases/download/v2.2.0/git-lfs-$([ "$TRAVIS_OS_NAME" == "linux" ] && echo "linux" || echo "darwin")-amd64-2.2.0.tar.gz | tar -xz -C /tmp/git-lfs --strip-components 1 && /tmp/git-lfs/git-lfs pull
-  - curl -L https://yarnpkg.com/latest.tar.gz | tar xvz && mv dist $HOME/.yarn
-  - export PATH="$HOME/.yarn/bin:$PATH"
-
+- mkdir -p /tmp/git-lfs && curl -L https://github.com/github/git-lfs/releases/download/v1.2.1/git-lfs-$([
+  "$TRAVIS_OS_NAME" == "linux" ] && echo "linux" || echo "darwin")-amd64-1.2.1.tar.gz
+  | tar -xz -C /tmp/git-lfs --strip-components 1 && /tmp/git-lfs/git-lfs pull
+- if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install --no-install-recommends
+  -y icnsutils graphicsmagick xz-utils; fi
 install:
-  - yarn
-
+- nvm install 8
+- curl -o- -L https://yarnpkg.com/install.sh | bash
+- source ~/.bashrc
+- npm install -g xvfb-maybe
+- yarn
 script:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then yarn release; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then yarn release -- --mac --win; fi
-
-before_cache:
-  - rm -rf $HOME/.cache/electron-builder/wine
-
+- yarn lint
+- yarn run build
 branches:
-  except:
-    - "/^v\\d+\\.\\d+\\.\\d+$/"
+  only:
+  - master
+deploy:
+  provider: releases
+  api_key:
+    secure: flyXUmcgUqbPlbw035fLTYcJQ91ctnn+DPod9jqhOlQ7wWOh1w74cJZ4jeHIHnmmE3ToM9s3di5vU+3xpHcquXOcYACFKh4k9Xae06tLadb3ELf5+D3+637yMeppiU3tqRTir9LoCEJeH+m4QVCue1n+/91ag4odTSEXORT1UtBssSR1TVdqHp159+aJXVkUkfpEQWv4pL9A8jzHygYpnETi/QxzzRKV5y7FiorF60oEPXl+iBCxiedIE5WDvk//96otMDioOLVGIAwF81c+qK4mACzWabIjIxa1qDAkg+xC+bV051rQg1C6wP1aYlhVWLwcFxkq3Q6YManedcZRpcreK7J66M5a5NN072pq9SDmFteoYYB3nS9TmQQ4tVj8n7XVAkVUmM6X5EDoB3RjtWfYfJnQhE8OtewH8f7RSQSPRYSTQ6yeoO8jcpmNPl8k0vBiwYgeE9KzZNCR8aTX9am2h6llX7BPlnJRqq71k4m5Oo54BL0gRmwm8R6zZDyVURZKBOkHDEDtlCSG9TRfSTYdd+XBhV4zRsf75rcUDqatMDU9j8IBs+BByD0xNkJyaj7EA0qoBTxYM9Xz4WapJpPMkaLFSscFPzyzV1/gQSmF9x7be2BnKwKr3BvPY59kBAxL3wzs2Des6D3Pzf5tpcxkXKMyJtgFNnKxcgiXt/U=
+  file: build/*.exe
+  on:
+    repo: uncleLuo/vue-electron-test
+    tags: true
