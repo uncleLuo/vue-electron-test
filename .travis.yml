@@ -31,7 +31,7 @@ install:
 - npm install -g xvfb-maybe
 - yarn
 script:
-- yarn lint
+- yarn run lint
 - yarn run build
 branches:
   only:
@@ -43,4 +43,3 @@ deploy:
   file: build/*.exe
   on:
     repo: uncleLuo/vue-electron-test
-    tags: true
